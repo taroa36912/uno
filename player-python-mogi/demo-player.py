@@ -1,4 +1,5 @@
-import argparse, os
+import argparse
+import os
 import math
 import random
 import sys
