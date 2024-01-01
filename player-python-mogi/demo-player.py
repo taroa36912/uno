@@ -90,7 +90,7 @@ TIME_DELAY = 10 # 処理停止時間
 
 
 once_connected = False
-id = '' # 自分のID
+id = 'kos' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 
 
