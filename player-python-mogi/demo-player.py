@@ -255,6 +255,10 @@ def determine_if_execute_pointed_not_say_uno(number_card_of_player):
         elif v == 1:
             # 1枚だけ所持しているプレイヤー
             target = k
+            # 抽出したプレイヤーがUNO宣言を行っていない場合宣言漏れを指摘する
+            if (target not in uno_declared.keys()):
+                send_event(SocketConst.EMIT.POINTED_NOT_SAY_UNO, { 'target': target })
+                time.sleep(TIME_DELAY / 1000)
             break
         elif k in uno_declared:
             # 2枚以上所持しているプレイヤーはUNO宣言の状態をリセットする
@@ -265,9 +269,9 @@ def determine_if_execute_pointed_not_say_uno(number_card_of_player):
         return
 
     # 抽出したプレイヤーがUNO宣言を行っていない場合宣言漏れを指摘する
-    if (target not in uno_declared.keys()):
-        send_event(SocketConst.EMIT.POINTED_NOT_SAY_UNO, { 'target': target })
-        time.sleep(TIME_DELAY / 1000)
+    #if (target not in uno_declared.keys()):
+    #    send_event(SocketConst.EMIT.POINTED_NOT_SAY_UNO, { 'target': target })
+    #    time.sleep(TIME_DELAY / 1000)
 
 
 """
