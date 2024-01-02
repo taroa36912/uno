@@ -179,7 +179,7 @@ def select_play_card(cards, before_caard):
             # ワイルド・シャッフルワイルド・白いワイルドも場札に関係なく出せる
             cards_wild.append(card)
         elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))):
-            cards_reverse.append(card)    
+            cards_reverse.append(card)  
         
         elif str(card.get('color')) == str(before_caard.get('color')):
             # 場札と同じ色のカード
