@@ -90,6 +90,7 @@ TIME_DELAY = 10 # 処理停止時間
 
 
 once_connected = False
+id_e[4] = {} #敵のidを保存する
 id = 'mathmatics' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
@@ -181,8 +182,9 @@ def select_play_card(cards, before_caard):
             # ワイルド・シャッフルワイルド・白いワイルドも場札に関係なく出せる
             cards_wild.append(card)
         elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))):
-            cards_reverse.append(card)  
-        
+            cards_reverse.append(card)
+        elif (str(card_special) == Special.SKIP and str(card.get('color')) == str(before_caard.get('color'))):
+            cards_reverse.append(card)
         elif str(card.get('color')) == str(before_caard.get('color')):
             # 場札と同じ色のカード
             cards_valid.append(card)
