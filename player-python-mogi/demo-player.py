@@ -251,10 +251,7 @@ Returns:
 """
 def is_challenge():
     # このプログラムでは1/2の確率でチャレンジを行う。
-    if random_by_number(2) >= 1:
-        return True
-    else:
-        return False
+    return False
 
 """
 他のプレイヤーのUNO宣言漏れをチェックする
