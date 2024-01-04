@@ -161,7 +161,7 @@ Args:
     cards (list): 自分の手札
     before_caard (*): 場札のカード
 """
-def select_play_card(cards, before_caard, number_card_of_player):
+def select_play_card(cards, before_caard):
     cards_wild = [] # 白いワイルドを格納
     cards_wild_shuffle = [] # シャッフルワイルドを格納
     cards_wild_white = [] # 白いワイルドを格納
@@ -487,8 +487,7 @@ def on_shuffle_wild(data_res):
 def on_next_player(data_res):
     def next_player_calback(data_res):
         cards = data_res.get('card_of_player')
-        number_card_of_player = data_res.get('number_card_of_player')
-        determine_if_execute_pointed_not_say_uno(number_card_of_player)
+        determine_if_execute_pointed_not_say_uno(data_res.get('number_card_of_player'))
 
         if (data_res.get('draw_reason') == DrawReason.WILD_DRAW_4):
             # カードを引く理由がワイルドドロー4の時、チャレンジを行うことができる。
@@ -506,7 +505,7 @@ def on_next_player(data_res):
         if special_logic_num_random == 0:
             send_event(SocketConst.EMIT.SPECIAL_LOGIC, { 'title': SPECIAL_LOGIC_TITLE })
 
-        play_card = select_play_card(cards, data_res.get('card_before'), number_card_of_player)
+        play_card = select_play_card(cards, data_res.get('card_before'))
 
         if play_card:
             # 選出したカードがある時
