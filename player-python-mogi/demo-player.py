@@ -217,7 +217,7 @@ def select_play_card(cards, before_caard):
                 i += 1
                 
     
-    list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color[i] + card_number + cards_wild + cards_wild_shuffle + cards_wild4
+    list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color[i] + cards_number + cards_wild + cards_wild_shuffle + cards_wild4
     if len(list) > 0:
         return list[0]
     else:
