@@ -161,7 +161,7 @@ Args:
     cards (list): 自分の手札
     before_caard (*): 場札のカード
 """
-def select_play_card(cards, before_caard):
+def select_play_card(cards, before_caard,number_card_of_player):
     cards_wild = [] # 白いワイルドを格納
     cards_wild_shuffle = [] # シャッフルワイルドを格納
     cards_wild_white = [] # 白いワイルドを格納
@@ -505,7 +505,7 @@ def on_next_player(data_res):
         if special_logic_num_random == 0:
             send_event(SocketConst.EMIT.SPECIAL_LOGIC, { 'title': SPECIAL_LOGIC_TITLE })
 
-        play_card = select_play_card(cards, data_res.get('card_before'))
+        play_card = select_play_card(cards, data_res.get('card_before'), data_res.get('number_card_of_player'))
 
         if play_card:
             # 選出したカードがある時
