@@ -171,6 +171,7 @@ def select_play_card(cards, before_caard):
     cards_reverse = [] #　revreseを格納
     cards_skip = [] # skipを格納
     cards_draw_2 = [] # draw_2を格納
+    list = [] # 出せるカードを優先順位順に格納
     
     # 場札と照らし合わせ出せるカードを抽出する
     for card in cards:
