@@ -178,21 +178,21 @@ def select_play_card(cards, before_caard, number_card_of_player):
     for card in cards:
         card_special = card.get('special')
         card_number = card.get('number')
-        if str(card_special) == Special.WILD_DRAW_4:
+        if str(card_special) == Special.WILD_DRAW_4: # 手札にドロー4がある場合、抽出
             cards_wild4.append(card)
-        elif (str(card_special) == Special.WILD):
+        elif (str(card_special) == Special.WILD): # 手札にワイルドがある場合、抽出
             cards_wild.append(card)
-        elif (str(card_special) == Special.WILD_SHUFFLE):
+        elif (str(card_special) == Special.WILD_SHUFFLE): # 手札にシャッフルがある場合、抽出
             cards_wild_shuffle.append(card)
-        elif (str(card_special) == Special.WHITE_WILD):
+        elif (str(card_special) == Special.WHITE_WILD): # 手札に白ワイルドがある場合、抽出
             cards_wild_white.append(card)
-        elif (str(card_special) == Special.DRAW_2 and str(card.get('color')) == str(before_caard.get('color'))):
+        elif (str(card_special) == Special.DRAW_2 and str(card.get('color')) == str(before_caard.get('color'))): # 手札に出せるドロー２がある場合、抽出
             cards_draw_2.append(card)
-        elif (str(card_special) == Special.SKIP and str(card.get('color')) == str(before_caard.get('color'))):
+        elif (str(card_special) == Special.SKIP and str(card.get('color')) == str(before_caard.get('color'))): # 手札に出せるスキップがある場合、抽出
             cards_skip.append(card)
-        elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))):
+        elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))): # 手札に出せるリバースがある場合、抽出
             cards_reverse.append(card)
-        elif (str(card.get('color')) == str(before_caard.get('color'))):
+        elif (str(card.get('color')) == str(before_caard.get('color'))): 
             # 場札と同じ色のカード
             cards_color.append(card)
         elif (
@@ -204,11 +204,7 @@ def select_play_card(cards, before_caard, number_card_of_player):
             cards_number.append(card)
 
     """
-    出せるカードのリストを結合し、先頭のカードを返却する。
-    このプログラムでは優先順位を、「同じ色 または 同じ数字・記号」 > 「ワイルド・シャッフルワイルド・白いワイルド」 > ワイルドドロー4の順番とする。
-    ワイルドドロー4は本来、手札に出せるカードが無い時に出していいカードであるため、一番優先順位を低くする。
-    ワイルド・シャッフルワイルド・白いワイルドはいつでも出せるので、条件が揃わないと出せない「同じ色 または 同じ数字・記号」のカードより優先度を低くする。
-    """
+    以下、シャッフルワイルドを出すアルゴリズムについてのプログラムである。検討のため、コメントにする
     
     flag = 1
     
@@ -233,6 +229,14 @@ def select_play_card(cards, before_caard, number_card_of_player):
         list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4    
     elif(flag):
         list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
+    else:
+        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
+    """
+
+
+    if(len(cards_color) > 0):
+        cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
     else:
         list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
         
