@@ -204,42 +204,35 @@ def select_play_card(cards, before_caard,number_card_of_player):
             cards_number.append(card)
 
     """
-    以下、シャッフルワイルドを出すアルゴリズムについてのプログラムである。検討のため、コメントにする
-    
+    以下、シャッフルワイルドを出すアルゴリズムについてのプログラムである
+    """
     flag = 1
-    
     if(len(cards_wild_shuffle) > 0):
         player_card_sum = 0
         number_of_my_card = 0
         for k, v in number_card_of_player.items():
             if k == id:
                 number_of_my_card = v
-            player_card_sum += v
-            if v < 3:
+            elif v < 3:
                 flag = 0
+            player_card_sum += v
         if ((number_of_my_card < player_card_sum // 4) and flag):
             cards_wild_shuffle.clear()
 
 
-    if(len(cards_color) > 0 and flag):
-        cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
-    elif(len(cards_color) > 0 and not flag):
-        cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4    
-    elif(flag):
-        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
+    if(not flag):
+        if(len(cards_color) > 0):
+            cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+            list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
+        else:
+            list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
     else:
-        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
-    """
-
-
-    if(len(cards_color) > 0):
-        cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
-    else:
-        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
-        
+        if(len(cards_color) > 0):
+            cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+            list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4    
+        else:
+            list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
+            
         
     
     
