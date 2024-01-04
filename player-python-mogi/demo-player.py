@@ -209,15 +209,11 @@ def select_play_card(cards, before_caard):
     """
     i = 0
     if(len(cards_color) > 0):
-        max_number = cards_color[0].get('number')
-        #数字の順番を入れ替える
-        for card in cards_color:
-            card_number = card.get('number')
-            if(int(max_number) < int(card_number)):
-                i += 1
-                
-    
-    list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color[i] + cards_number + cards_wild + cards_wild_shuffle + cards_wild4
+        cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+        list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild_shuffle + cards_wild4
+    else:
+        list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild_shuffle + cards_wild4    
+        
     if len(list) > 0:
         return list[0]
     else:
