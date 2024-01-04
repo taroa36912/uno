@@ -213,7 +213,7 @@ def select_play_card(cards, before_caard):
         #数字の順番を入れ替える
         for card in cards_color:
             card_number = card.get('number')
-            if(max_number < card_number):
+            if(int(max_number) < int(card_number)):
                 i += 1
                 
     
