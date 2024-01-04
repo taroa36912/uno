@@ -181,9 +181,9 @@ def select_play_card(cards, before_caard):
         ):
             # ワイルド・シャッフルワイルド・白いワイルドも場札に関係なく出せる
             cards_wild.append(card)
-        elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))):
-            cards_reverse.append(card)
         elif (str(card_special) == Special.SKIP and str(card.get('color')) == str(before_caard.get('color'))):
+            cards_reverse.append(card)
+        elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))):
             cards_reverse.append(card)
         elif str(card.get('color')) == str(before_caard.get('color')):
             # 場札と同じ色のカード
@@ -280,6 +280,16 @@ def determine_if_execute_pointed_not_say_uno(number_card_of_player):
     #if (target not in uno_declared.keys()):
     #    send_event(SocketConst.EMIT.POINTED_NOT_SAY_UNO, { 'target': target })
     #    time.sleep(TIME_DELAY / 1000)
+    
+    
+
+
+"""
+各プレイヤーのチャレンジ回数並びに成功回数を記録する
+"""
+
+def challenge_recorded():
+    print()
 
 
 """
