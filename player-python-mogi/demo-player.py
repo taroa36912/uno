@@ -162,39 +162,44 @@ Args:
     before_caard (*): 場札のカード
 """
 def select_play_card(cards, before_caard):
-    cards_valid = [] # ワイルド・シャッフルワイルド・白いワイルドを格納
-    cards_wild = [] # ワイルドドロー4を格納
-    cards_wild4 = [] # 同じ色 または 同じ数字・記号 のカードを格納
-    cards_reverse = [] #　revreseを格納する
-
+    cards_wild = [] # 白いワイルドを格納
+    cards_wild_shuffle = [] # シャッフルワイルドを格納
+    cards_wild_white = [] # 白いワイルドを格納
+    cards_wild4 = [] # ワイルドドロー4を格納
+    cards_color = [] # 同じ色のカードを格納
+    cards_number = [] # 同じ数字のカードを格納
+    cards_reverse = [] #　revreseを格納
+    cards_skip = [] # skipを格納
+    cards_draw_2 = [] # draw_2を格納
+    
     # 場札と照らし合わせ出せるカードを抽出する
     for card in cards:
         card_special = card.get('special')
         card_number = card.get('number')
         if str(card_special) == Special.WILD_DRAW_4:
-            # ワイルドドロー4は場札に関係なく出せる
             cards_wild4.append(card)
-        elif (
-            str(card_special) == Special.WILD or
-            str(card_special) == Special.WILD_SHUFFLE or
-            str(card_special) == Special.WHITE_WILD
-        ):
-            # ワイルド・シャッフルワイルド・白いワイルドも場札に関係なく出せる
+        elif (str(card_special) == Special.WILD):
             cards_wild.append(card)
+        elif (str(card_special) == Special.WILD_SHUFFLE):
+            cards_wild_shuffle.append(card)
+        elif (str(card_special) == Special.WHITE_WILD):
+            cards_wild_white.append(card)
+        elif (str(card_special) == Special.DRAW_2 and str(card.get('color')) == str(before_caard.get('color'))):
+            cards_draw_2.append(card)
         elif (str(card_special) == Special.SKIP and str(card.get('color')) == str(before_caard.get('color'))):
-            cards_reverse.append(card)
+            cards_skip.append(card)
         elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))):
             cards_reverse.append(card)
-        elif str(card.get('color')) == str(before_caard.get('color')):
+        elif (str(card.get('color')) == str(before_caard.get('color'))):
             # 場札と同じ色のカード
-            cards_valid.append(card)
+            cards_color.append(card)
         elif (
             (card_special and str(card_special) == str(before_caard.get('special'))) or
             ((card_number is not None or (card_number is not None and int(card_number) == 0)) and
              (before_caard.get('number') and int(card_number) == int(before_caard.get('number'))))
         ):
-            # 場札と数字または記号が同じカード
-            cards_valid.append(card)
+            # 場札と数字が同じカード
+            cards_number.append(card)
 
     """
     出せるカードのリストを結合し、先頭のカードを返却する。
@@ -202,7 +207,17 @@ def select_play_card(cards, before_caard):
     ワイルドドロー4は本来、手札に出せるカードが無い時に出していいカードであるため、一番優先順位を低くする。
     ワイルド・シャッフルワイルド・白いワイルドはいつでも出せるので、条件が揃わないと出せない「同じ色 または 同じ数字・記号」のカードより優先度を低くする。
     """
-    list = cards_reverse + cards_valid + cards_wild + cards_wild4
+    i = 0
+    if(len(cards_color) > 0):
+        max_number = cards_color[0].get('number')
+        #数字の順番を入れ替える
+        for card in cards_color:
+            card_number = card.get('number')
+            if(max_number < card_number):
+                i += 1
+                
+    
+    list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color[i] + card_number + cards_wild + cards_wild_shuffle + cards_wild4
     if len(list) > 0:
         return list[0]
     else:
