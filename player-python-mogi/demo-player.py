@@ -91,7 +91,7 @@ TIME_DELAY = 10 # 処理停止時間
 
 once_connected = False
 #id_e[4] = {} #敵のidを保存する
-id = 'mathmatics' # 自分のID
+id = 'math' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 #player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
 #player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
