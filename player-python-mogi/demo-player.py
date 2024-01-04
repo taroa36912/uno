@@ -95,6 +95,7 @@ id = 'math' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 #player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
 #player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
+cards_color = [] # 初手、シャッフル時の色変更時に用いる
 
 
 """
@@ -161,7 +162,7 @@ Args:
     cards (list): 自分の手札
     before_caard (*): 場札のカード
 """
-def select_play_card(cards, before_caard,number_card_of_player):
+def select_play_card(cards, before_caard, number_card_of_player):
     cards_wild = [] # 白いワイルドを格納
     cards_wild_shuffle = [] # シャッフルワイルドを格納
     cards_wild_white = [] # 白いワイルドを格納
@@ -280,8 +281,23 @@ def random_by_number(num):
 Returns:
     str:
 """
-def select_change_color():
-    # このプログラムでは変更する色をランダムで選択する。
+def select_change_color(cards):
+    # 自分の手札に一番多い色を選択する
+    if(len(cards) > 0):
+        color_number = [0,0,0,0]
+        for card in cards:
+            if(card.get('color') == Color.RED):
+                color_number[0] += 1
+            elif(card.get('color') == Color.YELLOW):
+                color_number[1] += 1
+            elif(card.get('color') == Color.GREEN):
+                color_number[2] += 1
+            elif(card.get('color') == Color.BLUE):
+                color_number[3] += 1
+                
+        i = max(range(len(color_number)), key=color_number.__getitem__)
+        return ARR_COLOR[i]
+    
     return ARR_COLOR[random_by_number(len(ARR_COLOR))]
 
 """
@@ -446,6 +462,7 @@ def on_join_room(data_res):
 # カードが手札に追加された
 @sio.on(SocketConst.EMIT.RECEIVER_CARD)
 def on_reciever_card(data_res):
+    cards_color = data_res.get('cards_receive')
     receive_event(SocketConst.EMIT.RECEIVER_CARD, data_res)
 
 
@@ -459,7 +476,7 @@ def on_first_player(data_res):
 @sio.on(SocketConst.EMIT.COLOR_OF_WILD)
 def on_color_of_wild(data_res):
     def color_of_wild_callback(data_res):
-        color = select_change_color()
+        color = select_change_color(cards_color)
         data = {
             'color_of_wild': color,
         }
@@ -480,6 +497,7 @@ def on_update_color(data_res):
 @sio.on(SocketConst.EMIT.SHUFFLE_WILD)
 def on_shuffle_wild(data_res):
     def shuffle_wild_calback(data_res):
+        cards_color = data_res.get('cards_receive')
         global uno_declared
         uno_declared = {}
         for k, v in data_res.get('number_card_of_player').items():
@@ -529,7 +547,7 @@ def on_next_player(data_res):
             }
 
             if play_card.get('special') == Special.WILD or play_card.get('special') == Special.WILD_DRAW_4:
-                color = select_change_color()
+                color = select_change_color(cards)
                 data['color_of_wild'] = color
 
             # カードを出すイベントを実行
@@ -551,7 +569,7 @@ def on_next_player(data_res):
 
                 play_card = res.get('draw_card')[0]
                 if play_card.get('special') == Special.WILD or play_card.get('special') == Special.WILD_DRAW_4:
-                    color = select_change_color()
+                    color = select_change_color(cards)
                     data['color_of_wild'] = color
 
                 # 引いたカードを出すイベントを実行
