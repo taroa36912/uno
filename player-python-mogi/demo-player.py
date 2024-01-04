@@ -228,6 +228,10 @@ def select_play_card(cards, before_caard,number_card_of_player):
         flag = 1
     else:
         flag = 0
+        
+    """
+    ここまで
+    """
 
 
     if(flag):
