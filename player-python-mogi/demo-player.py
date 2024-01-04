@@ -172,6 +172,10 @@ def select_play_card(cards, before_caard,number_card_of_player):
     cards_skip = [] # skipを格納
     cards_draw_2 = [] # draw_2を格納
     list = [] # 出せるカードを優先順位順に格納
+    flag = 0 # 採取的に決めるフラグ変数
+    flag_1 = 1 # シャッフルワイルドについてのフラグ変数
+    flag_2 = 1 # フラグ第２変数 二つとも1のときのみシャッフルを適用
+    flag_3 = 1 # フラグ第３変数　これは独立
     
     
     # 場札と照らし合わせ出せるカードを抽出する
@@ -202,11 +206,12 @@ def select_play_card(cards, before_caard,number_card_of_player):
         ):
             # 場札と数字が同じカード
             cards_number.append(card)
+        elif (str(card_special) == Special.SKIP or str(card_special) == Special.DRAW_2):
+            flag_2 = 0
 
     """
     以下、シャッフルワイルドを出すアルゴリズムについてのプログラムである
     """
-    flag = 1
     if(len(cards_wild_shuffle) > 0):
         player_card_sum = 0
         number_of_my_card = 0
@@ -214,13 +219,18 @@ def select_play_card(cards, before_caard,number_card_of_player):
             if k == id:
                 number_of_my_card = v
             elif v < 3:
-                flag = 0
+                flag_3 = 1
             player_card_sum += v
-        if ((number_of_my_card < player_card_sum // 4) and flag):
-            cards_wild_shuffle.clear()
+        if ((number_of_my_card < player_card_sum // 4)):
+            flag_1 = 0
+            
+    if(flag_1 and flag_2) or flag_3:
+        flag = 1
+    else:
+        flag = 0
 
 
-    if(not flag):
+    if(flag):
         if(len(cards_color) > 0):
             cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
             list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
@@ -229,9 +239,9 @@ def select_play_card(cards, before_caard,number_card_of_player):
     else:
         if(len(cards_color) > 0):
             cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-            list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4    
+            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild_shuffle + cards_wild4    
         else:
-            list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
+            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild_shuffle + cards_wild4
             
         
     
