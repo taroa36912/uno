@@ -161,7 +161,7 @@ Args:
     cards (list): 自分の手札
     before_caard (*): 場札のカード
 """
-def select_play_card(cards, before_caard):
+def select_play_card(cards, before_caard, number_card_of_player):
     cards_wild = [] # 白いワイルドを格納
     cards_wild_shuffle = [] # シャッフルワイルドを格納
     cards_wild_white = [] # 白いワイルドを格納
@@ -172,6 +172,7 @@ def select_play_card(cards, before_caard):
     cards_skip = [] # skipを格納
     cards_draw_2 = [] # draw_2を格納
     list = [] # 出せるカードを優先順位順に格納
+    
     
     # 場札と照らし合わせ出せるカードを抽出する
     for card in cards:
@@ -208,13 +209,36 @@ def select_play_card(cards, before_caard):
     ワイルドドロー4は本来、手札に出せるカードが無い時に出していいカードであるため、一番優先順位を低くする。
     ワイルド・シャッフルワイルド・白いワイルドはいつでも出せるので、条件が揃わないと出せない「同じ色 または 同じ数字・記号」のカードより優先度を低くする。
     """
-    i = 0
-    if(len(cards_color) > 0):
+    
+    flag = 1
+    
+    if(len(cards_wild_shuffle) > 0):
+        player_card_sum = 0
+        number_of_my_card = 0
+        for k, v in number_card_of_player.items():
+            if k == id:
+                number_of_my_card = v
+            player_card_sum += v
+            if v < 3:
+                flag = 0
+        if ((number_of_my_card < player_card_sum // 4) and flag):
+            cards_wild_shuffle.clear()
+
+
+    if(len(cards_color) > 0 and flag):
         cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
         list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
+    elif(len(cards_color) > 0 and not flag):
+        cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4    
+    elif(flag):
+        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
     else:
-        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
+        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
         
+        
+    
+    
     if len(list) > 0:
         return list[0]
     else:
@@ -250,7 +274,7 @@ Returns:
     bool:
 """
 def is_challenge():
-    # このプログラムでは1/2の確率でチャレンジを行う。
+    # このプログラムでは特にチャレンジは行わない
     return False
 
 """
@@ -458,9 +482,9 @@ def on_shuffle_wild(data_res):
 @sio.on(SocketConst.EMIT.NEXT_PLAYER)
 def on_next_player(data_res):
     def next_player_calback(data_res):
-        determine_if_execute_pointed_not_say_uno(data_res.get('number_card_of_player'))
-
         cards = data_res.get('card_of_player')
+        number_card_of_player = data_res.get('number_card_of_player')
+        determine_if_execute_pointed_not_say_uno(number_card_of_player)
 
         if (data_res.get('draw_reason') == DrawReason.WILD_DRAW_4):
             # カードを引く理由がワイルドドロー4の時、チャレンジを行うことができる。
@@ -478,7 +502,7 @@ def on_next_player(data_res):
         if special_logic_num_random == 0:
             send_event(SocketConst.EMIT.SPECIAL_LOGIC, { 'title': SPECIAL_LOGIC_TITLE })
 
-        play_card = select_play_card(cards, data_res.get('card_before'))
+        play_card = select_play_card(cards, data_res.get('card_before'), number_card_of_player)
 
         if play_card:
             # 選出したカードがある時
