@@ -238,7 +238,7 @@ def select_play_card(cards, before_caard, number_card_of_player):
         cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
         list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
     else:
-        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
+        list = cards_wild_white + cards_draw_2 + cards_skip + cards_wild_shuffle + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
         
         
     
