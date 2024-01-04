@@ -200,11 +200,7 @@ def select_play_card(cards, before_caard, number_card_of_player):
         elif (str(card.get('color')) == str(before_caard.get('color'))): 
             # 場札と同じ色のカード
             cards_color.append(card)
-        elif (
-            (card_special and str(card_special) == str(before_caard.get('special'))) or
-            ((card_number is not None or (card_number is not None and int(card_number) == 0)) and
-             (before_caard.get('number') and int(card_number) == int(before_caard.get('number'))))
-        ):
+        elif (int(card_number) == int(before_caard.get('number'))):
             # 場札と数字が同じカード
             cards_number.append(card)
         elif (str(card_special) == Special.SKIP or str(card_special) == Special.DRAW_2):
@@ -281,6 +277,11 @@ def random_by_number(num):
 Returns:
     str:
 """
+
+def select_change_color_r():
+    return ARR_COLOR[random_by_number(len(ARR_COLOR))]
+
+
 def select_change_color(cards):
     # 自分の手札に一番多い色を選択する
     if(len(cards) > 0):
