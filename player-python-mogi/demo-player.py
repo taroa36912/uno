@@ -237,13 +237,19 @@ def select_play_card(cards, before_caard,number_card_of_player):
     if(flag):
         if(len(cards_color) > 0):
             cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-            list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
+            if(int(cards_color_[0].get('number')) > int(before_caard.get('number'))):
+                list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
+            else:
+                list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild4
         else:
             list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
     else:
         if(len(cards_color) > 0):
             cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild_shuffle + cards_wild4    
+            if(int(cards_color_[0].get('number')) > int(before_caard.get('number'))):
+                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild_shuffle + cards_wild4   
+            else:
+                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild_shuffle + cards_wild4
         else:
             list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild_shuffle + cards_wild4
             
