@@ -96,6 +96,7 @@ uno_declared = {} # 他のプレイヤーのUNO宣言状況
 #player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
 #player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
 cards_color = [] # 初手、シャッフル時の色変更時に用いる
+cards_place = [] # 場札の格納を行う
 
 
 """
@@ -527,6 +528,7 @@ def on_reciever_card(data_res):
 # 対戦の開始
 @sio.on(SocketConst.EMIT.FIRST_PLAYER)
 def on_first_player(data_res):
+    cards_place.append(data_res.get('first_card'))
     receive_event(SocketConst.EMIT.FIRST_PLAYER, data_res)
 
 
@@ -648,6 +650,7 @@ def on_play_card(data_res):
         # UNO宣言を行った場合は記録する
         if data_res.get('yell_uno'):
             uno_declared[data_res.get('player')] = data_res.get('yell_uno')
+        cards_place.append(data_res.get('card_play'))
 
     receive_event(SocketConst.EMIT.PLAY_CARD, data_res, play_card_callback)
 
@@ -672,6 +675,9 @@ def on_play_draw_card(data_res):
         # UNO宣言を行った場合は記録する
         if data_res.get('yell_uno'):
             uno_declared[data_res.get('player')] = data_res.get('yell_uno')
+        
+        if(data_res.get('is_play_card')):
+            cards_place.append(data_res.get('card_play'))
 
     receive_event(SocketConst.EMIT.PLAY_DRAW_CARD, data_res, play_draw_card_callback)
 
