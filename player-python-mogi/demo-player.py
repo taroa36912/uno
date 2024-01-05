@@ -91,11 +91,12 @@ TIME_DELAY = 10 # 処理停止時間
 
 once_connected = False
 #id_e[4] = {} #敵のidを保存する
-id = 'math' # 自分のID
+id = 'welldefined' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 #player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
 #player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
 cards_color = [] # 初手、シャッフル時の色変更時に用いる
+shuffle_flag = 0 # シャッフルカードを持っているかどうか
 
 
 """
@@ -313,8 +314,11 @@ def select_change_color(cards):
 Returns:
     bool:
 """
-def is_challenge():
-    # このプログラムでは特にチャレンジは行わない
+def is_challenge(number_card_of_player):
+    for k, v in number_card_of_player.items():
+        if k == id:
+            if v == 1:
+                return True
     return False
 
 """
@@ -525,11 +529,12 @@ def on_shuffle_wild(data_res):
 def on_next_player(data_res):
     def next_player_calback(data_res):
         cards = data_res.get('card_of_player')
-        determine_if_execute_pointed_not_say_uno(data_res.get('number_card_of_player'))
+        number_cards = data_res.get('number_card_of_player')
+        determine_if_execute_pointed_not_say_uno(number_cards)
 
         if (data_res.get('draw_reason') == DrawReason.WILD_DRAW_4):
             # カードを引く理由がワイルドドロー4の時、チャレンジを行うことができる。
-            if is_challenge():
+            if is_challenge(cards):
                 send_event(SocketConst.EMIT.CHALLENGE, { 'is_challenge': True} )
                 return
 
@@ -543,7 +548,7 @@ def on_next_player(data_res):
         if special_logic_num_random == 0:
             send_event(SocketConst.EMIT.SPECIAL_LOGIC, { 'title': SPECIAL_LOGIC_TITLE })
 
-        play_card = select_play_card(cards, data_res.get('card_before'), data_res.get('number_card_of_player'))
+        play_card = select_play_card(cards, data_res.get('card_before'), number_cards)
 
         if play_card:
             # 選出したカードがある時
