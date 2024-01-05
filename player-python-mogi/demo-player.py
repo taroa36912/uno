@@ -493,8 +493,6 @@ def on_reciever_card(data_res):
 # 対戦の開始
 @sio.on(SocketConst.EMIT.FIRST_PLAYER)
 def on_first_player(data_res):
-    cards = data_res.get('cards_receive')
-    shuffle_check(cards)
     receive_event(SocketConst.EMIT.FIRST_PLAYER, data_res)
 
 
