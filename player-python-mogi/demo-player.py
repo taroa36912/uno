@@ -292,17 +292,46 @@ def select_change_color(cards):
     # 自分の手札に一番多い色を選択する
     if(len(cards) > 0):
         color_number = [0,0,0,0]
+        color_special = [0,0,0,0]
         for card in cards:
             if(card.get('color') == Color.RED):
-                color_number[0] += 1
+                if(card.get('special')):
+                    color_number[0] += 20
+                    color_special[0] += 1
+                elif(card.get('number')):
+                    color_number[0] += int(card.get('number'))
+                else:
+                    color_number[0] += 1
             elif(card.get('color') == Color.YELLOW):
-                color_number[1] += 1
+                if(card.get('special')):
+                    color_number[1] += 20
+                    color_special[1] += 1
+                elif(card.get('number')):
+                    color_number[1] += int(card.get('number'))
+                else:
+                    color_number[1] += 1
             elif(card.get('color') == Color.GREEN):
-                color_number[2] += 1
+                if(card.get('special')):
+                    color_number[2] += 20
+                    color_special[2] += 1
+                elif(card.get('number')):
+                    color_number[2] += int(card.get('number'))
+                else:
+                    color_number[2] += 1
             elif(card.get('color') == Color.BLUE):
-                color_number[3] += 1
+                if(card.get('special')):
+                    color_number[3] += 20
+                    color_special[3] += 1
+                elif(card.get('number')):
+                    color_number[3] += int(card.get('number'))
+                else:
+                    color_number[3] += 1
                 
-        i = max(range(len(color_number)), key=color_number.__getitem__)
+        max_value = max(color_number)
+        max_indexes = [index for index, value in enumerate(color_number) if value == max_value]
+        # color_specialの中で最も中身の整数が大きいインデックスを抽出
+        i = max(max_indexes, key=lambda x: color_special[x])
+            
         return ARR_COLOR[i]
     
     return ARR_COLOR[random_by_number(len(ARR_COLOR))]
