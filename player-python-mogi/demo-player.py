@@ -313,11 +313,16 @@ def select_change_color(cards):
 Returns:
     bool:
 """
-def is_challenge(number_card_of_player):
+def is_challenge(number_card_of_player, cards):
     for k, v in number_card_of_player.items():
         if k == id:
             if v == 1:
                 return True
+            
+    if(shuffle_check(cards)):
+        return True
+    
+        
     return False
 
 """
@@ -547,7 +552,7 @@ def on_next_player(data_res):
 
         if (data_res.get('draw_reason') == DrawReason.WILD_DRAW_4):
             # カードを引く理由がワイルドドロー4の時、チャレンジを行うことができる。
-            if is_challenge(cards):
+            if is_challenge(number_cards, cards):
                 send_event(SocketConst.EMIT.CHALLENGE, { 'is_challenge': True} )
                 return
 
