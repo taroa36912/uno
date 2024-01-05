@@ -96,7 +96,6 @@ uno_declared = {} # 他のプレイヤーのUNO宣言状況
 #player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
 #player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
 cards_color = [] # 初手、シャッフル時の色変更時に用いる
-shuffle_flag = 0 # シャッフルカードを持っているかどうか
 
 
 """
@@ -359,6 +358,20 @@ def determine_if_execute_pointed_not_say_uno(number_card_of_player):
     #    time.sleep(TIME_DELAY / 1000)
     
     
+"""
+自分の手札にシャッフルが入っているかどうか確認する
+"""
+
+def shuffle_check(cards):
+    for card in cards:
+        card_special = card.get('special')
+        if(str(card_special) == Special.WILD_SHUFFLE):
+            return True
+        
+    return False
+            
+    
+    
 
 
 """
@@ -480,6 +493,8 @@ def on_reciever_card(data_res):
 # 対戦の開始
 @sio.on(SocketConst.EMIT.FIRST_PLAYER)
 def on_first_player(data_res):
+    cards = data_res.get('cards_receive')
+    shuffle_check(cards)
     receive_event(SocketConst.EMIT.FIRST_PLAYER, data_res)
 
 
