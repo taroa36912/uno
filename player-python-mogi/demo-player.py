@@ -90,13 +90,14 @@ TIME_DELAY = 10 # 処理停止時間
 
 
 once_connected = False
-#id_e[4] = {} #敵のidを保存する
+# id_e[4] = {} #敵のidを保存する
 id = 'welldefined' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 #player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
 #player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
-cards_color = [] # 初手、シャッフル時の色変更時に用いる
-cards_place = [] # 場札の格納を行う
+cards_colors = [] # 対戦開始時のカードがワイルドだった時, シャッフルワイルドが場札に出された時専用
+cards_all = [[0]]*5 # 0~3にプレイヤー(順番)、4に場札の捨て札を記録する
+my_turn = 0 # 自分の順番の数を代入する
 
 
 """
@@ -521,14 +522,14 @@ def on_join_room(data_res):
 # カードが手札に追加された
 @sio.on(SocketConst.EMIT.RECEIVER_CARD)
 def on_reciever_card(data_res):
-    cards_color = data_res.get('cards_receive')
+    if(len(data_res.get('cards_receive')) == 7):
+        cards_colors = data_res.get('cards_receive')
     receive_event(SocketConst.EMIT.RECEIVER_CARD, data_res)
 
 
 # 対戦の開始
 @sio.on(SocketConst.EMIT.FIRST_PLAYER)
 def on_first_player(data_res):
-    cards_place.append(data_res.get('first_card'))
     receive_event(SocketConst.EMIT.FIRST_PLAYER, data_res)
 
 
@@ -536,7 +537,7 @@ def on_first_player(data_res):
 @sio.on(SocketConst.EMIT.COLOR_OF_WILD)
 def on_color_of_wild(data_res):
     def color_of_wild_callback(data_res):
-        color = select_change_color(cards_color)
+        color = select_change_color(cards_colors)
         data = {
             'color_of_wild': color,
         }
@@ -557,7 +558,7 @@ def on_update_color(data_res):
 @sio.on(SocketConst.EMIT.SHUFFLE_WILD)
 def on_shuffle_wild(data_res):
     def shuffle_wild_calback(data_res):
-        cards_color = data_res.get('cards_receive')
+        cards_colors = data_res.get('cards_receive')
         global uno_declared
         uno_declared = {}
         for k, v in data_res.get('number_card_of_player').items():
@@ -650,7 +651,7 @@ def on_play_card(data_res):
         # UNO宣言を行った場合は記録する
         if data_res.get('yell_uno'):
             uno_declared[data_res.get('player')] = data_res.get('yell_uno')
-        cards_place.append(data_res.get('card_play'))
+        cards_all[4].append(data_res.get('card_play'))
 
     receive_event(SocketConst.EMIT.PLAY_CARD, data_res, play_card_callback)
 
@@ -677,7 +678,7 @@ def on_play_draw_card(data_res):
             uno_declared[data_res.get('player')] = data_res.get('yell_uno')
         
         if(data_res.get('is_play_card')):
-            cards_place.append(data_res.get('card_play'))
+            cards_all[4].append(data_res.get('card_play'))
 
     receive_event(SocketConst.EMIT.PLAY_DRAW_CARD, data_res, play_draw_card_callback)
 
