@@ -92,9 +92,9 @@ TIME_DELAY = 10 # 処理停止時間
 once_connected = False
 id_e = [0]*4 #敵のidを保存する
 id = 'welldefined' # 自分のID
-uno_declared = {} # 他のプレイヤーのUNO宣言状況
-#player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
-#player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
+# uno_declared = {} # 他のプレイヤーのUNO宣言状況
+# player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
+# player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
 cards_colors = [] # 対戦開始時のカードがワイルドだった時, シャッフルワイルドが場札に出された時専用
 cards_all = [[0]]*5 # 0~3にプレイヤー(順番)、4に場札の捨て札を記録する
 my_turn = 0 # 自分の順番の数を代入する
@@ -270,11 +270,11 @@ def select_play_card(cards, before_caard, number_card_of_player):
             cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
             card_number = cards_color_[0].get('number')
             if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
-                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild_shuffle + cards_wild4   
+                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild4   
             else:
-                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild_shuffle + cards_wild4
+                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
         else:
-            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild_shuffle + cards_wild4
+            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
             
         
     
@@ -650,11 +650,20 @@ def on_next_player(data_res):
                     return
 
                 # 以後、引いたカードが場に出せるときの処理
-                data = {
-                    'is_play_card': True,
-                    'yell_uno': len(cards + res.get('draw_card')) == 2, # 残り手札数を考慮してUNOコールを宣言する
-                }
-
+                card = res.get('draw_card')
+                cards.append(card)
+                play_draw_card = select_play_card(cards, data_res.get('card_before'), number_cards)
+                if play_draw_card:
+                    data = {
+                        'is_play_card': True,
+                        'yell_uno': len(cards + card) == 2, # 残り手札数を考慮してUNOコールを宣言する
+                    }                    
+                else:
+                    data = {
+                        'is_play_card': False,
+                        'yell_uno': len(cards + card) == 2, # 残り手札数を考慮してUNOコールを宣言する
+                    }
+                
                 play_card = res.get('draw_card')[0]
                 if play_card.get('special') == Special.WILD or play_card.get('special') == Special.WILD_DRAW_4:
                     color = select_change_color(cards)
