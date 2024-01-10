@@ -90,7 +90,7 @@ TIME_DELAY = 10 # 処理停止時間
 
 
 once_connected = False
-# id_e[4] = {} #敵のidを保存する
+id_e = [0]*4 #敵のidを保存する
 id = 'welldefined' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 #player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
@@ -155,6 +155,24 @@ TEST_TOOL_EVENT_DATA = {
 
 # Socketクライアント
 sio = socketio.Client()
+
+
+
+"""
+idの整合性を確かめる関数
+"""
+
+def id_checker(player):
+    if player == id_e[0]:
+        return 0
+    if player == id_e[1]:
+        return 1
+    if player == id_e[2]:
+        return 2
+    if player == id_e[3]:
+        return 3
+    
+    return 4
 
 
 """
@@ -530,6 +548,14 @@ def on_reciever_card(data_res):
 # 対戦の開始
 @sio.on(SocketConst.EMIT.FIRST_PLAYER)
 def on_first_player(data_res):
+    ids = data_res.get('play_order')
+    i = 0
+    for id_ in ids:
+        id_e[i] = id_
+        if id_ == id:
+            my_turn = i
+        i += 1
+    i = 0
     receive_event(SocketConst.EMIT.FIRST_PLAYER, data_res)
 
 
@@ -647,6 +673,8 @@ def on_next_player(data_res):
 @sio.on(SocketConst.EMIT.PLAY_CARD)
 def on_play_card(data_res):
     def play_card_callback(data_res):
+        player = data_res.get('player')
+        cards_all[id_checker(player)] = data_res.get('card_play')
         global uno_declared
         # UNO宣言を行った場合は記録する
         if data_res.get('yell_uno'):
@@ -672,6 +700,9 @@ def on_draw_card(data_res):
 @sio.on(SocketConst.EMIT.PLAY_DRAW_CARD)
 def on_play_draw_card(data_res):
     def play_draw_card_callback(data_res):
+        if data_res.get('is_play_card'):
+            player = data_res.get('player')
+            cards_all[id_checker(player)] = data_res.get('card_play')
         global uno_declared
         # UNO宣言を行った場合は記録する
         if data_res.get('yell_uno'):
