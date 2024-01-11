@@ -782,6 +782,11 @@ def on_play_draw_card(data_res):
 # チャレンジの結果
 @sio.on(SocketConst.EMIT.CHALLENGE)
 def on_challenge(data_res):
+    i = id_checker(data_res.get('challenger'))
+    if(data_res.get('is_challenge')):
+        player_challenge[i] += 1
+    if(data_res.get('is_challenge_success')):
+        player_challenge_succeed[i] += 1
     receive_event(SocketConst.EMIT.CHALLENGE, data_res)
 
 
