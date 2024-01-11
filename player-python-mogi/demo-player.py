@@ -249,6 +249,12 @@ def select_play_card(cards, before_caard, number_card_of_player):
     以下、シャッフルワイルドを出すアルゴリズムについてのプログラムである
     """
     if(len(cards_wild_shuffle) > 0):
+        if(number_of_my_card == 1):
+            list = cards_wild_shuffle
+            if len(list) > 0:
+                return list[0]
+            else:
+                return None
         player_card_sum = 0
         for k, v in number_card_of_player.items():
             if k == id:
@@ -268,7 +274,7 @@ def select_play_card(cards, before_caard, number_card_of_player):
     ここまで
     """
     
-    if(count>1):
+    if(count > 1):
         if(flag):
             list = cards_wild_shuffle + cards_wild + cards_wild4 + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
         else:
@@ -278,6 +284,20 @@ def select_play_card(cards, before_caard, number_card_of_player):
             return list[0]
         else:
             return None
+    
+    
+    """
+    if(count == 1 && ):
+        if(flag):
+            list = cards_wild_shuffle + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
+        else:
+            list = cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
+        
+        if len(list) > 0:
+            return list[0]
+        else:
+            return None
+    """
 
 
     if(len(cards_color) > 0):
@@ -285,26 +305,28 @@ def select_play_card(cards, before_caard, number_card_of_player):
         card_number = cards_color_[0].get('number')
         if(flag):
             if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
-                list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild4
+                list = cards_wild_shuffle + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_
             else:
-                list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
+                list = cards_wild_shuffle + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
         else:
             if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
-                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild4   
+                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_
             else:
-                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
+                list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number
         
         if len(list) > 0:
             return list[0]
         else:
             return None
+        
+        
             
     if(flag):
-        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
+        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number 
     else:
-        list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
-        if(number_of_my_card == 1):
-            list = list + cards_wild_shuffle
+        list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
+        
+
         
     if len(list) > 0:
         return list[0]
