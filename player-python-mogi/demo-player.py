@@ -197,6 +197,7 @@ def select_play_card(cards, before_caard, number_card_of_player):
     flag_1 = 1 # シャッフルワイルドについてのフラグ変数
     flag_2 = 1 # フラグ第２変数 二つとも1のときのみシャッフルを適用
     flag_3 = 1 # フラグ第３変数　これは独立
+    count = 0 # ワイルドの手札の枚数をカウントする
     
     
     # 場札と照らし合わせ出せるカードを抽出する
@@ -205,17 +206,30 @@ def select_play_card(cards, before_caard, number_card_of_player):
         card_number = card.get('number')
         if str(card_special) == Special.WILD_DRAW_4: # 手札にドロー4がある場合、抽出
             cards_wild4.append(card)
+            count += 1
         elif (str(card_special) == Special.WILD): # 手札にワイルドがある場合、抽出
             cards_wild.append(card)
+            count += 1
         elif (str(card_special) == Special.WILD_SHUFFLE): # 手札にシャッフルがある場合、抽出
             cards_wild_shuffle.append(card)
+            count += 1
         elif (str(card_special) == Special.WHITE_WILD): # 手札に白ワイルドがある場合、抽出
             cards_wild_white.append(card)
-        elif (str(card_special) == Special.DRAW_2 and str(card.get('color')) == str(before_caard.get('color'))): # 手札に出せるドロー２がある場合、抽出
+            count += 1
+        elif (
+            (str(card_special) == Special.DRAW_2) and 
+              ((str(card.get('color')) == str(before_caard.get('color'))) or (str(card_special) == str(before_caard.get('special'))))
+              ): # 手札に出せるドロー２がある場合、抽出
             cards_draw_2.append(card)
-        elif (str(card_special) == Special.SKIP and str(card.get('color')) == str(before_caard.get('color'))): # 手札に出せるスキップがある場合、抽出
+        elif (
+            (str(card_special) == Special.SKIP) and 
+              ((str(card.get('color')) == str(before_caard.get('color'))) or (str(card_special) == str(before_caard.get('special'))))
+              ): # 手札に出せるスキップがある場合、抽出
             cards_skip.append(card)
-        elif (str(card_special) == Special.REVERSE and str(card.get('color')) == str(before_caard.get('color'))): # 手札に出せるリバースがある場合、抽出
+        elif (
+            (str(card_special) == Special.REVERSE) and
+            ((str(card.get('color')) == str(before_caard.get('color'))) or (str(card_special) == str(before_caard.get('special'))))
+            ): # 手札に出せるリバースがある場合、抽出
             cards_reverse.append(card)
         elif (str(card.get('color')) == str(before_caard.get('color'))): 
             # 場札と同じ色のカード
