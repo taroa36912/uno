@@ -198,6 +198,7 @@ def select_play_card(cards, before_caard, number_card_of_player):
     flag_2 = 1 # フラグ第２変数 二つとも1のときのみシャッフルを適用
     flag_3 = 1 # フラグ第３変数　これは独立
     count = 0 # ワイルドの手札の枚数をカウントする
+    number_of_my_card = 0 # 自分の手札の枚数をカウントする
     
     
     # 場札と照らし合わせ出せるカードを抽出する
@@ -249,7 +250,6 @@ def select_play_card(cards, before_caard, number_card_of_player):
     """
     if(len(cards_wild_shuffle) > 0):
         player_card_sum = 0
-        number_of_my_card = 0
         for k, v in number_card_of_player.items():
             if k == id:
                 number_of_my_card = v
@@ -267,32 +267,45 @@ def select_play_card(cards, before_caard, number_card_of_player):
     """
     ここまで
     """
+    
+    if(count>1):
+        if(flag):
+            list = cards_wild_shuffle + cards_wild + cards_wild4 + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
+        else:
+            list = cards_wild + cards_wild4 + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
+        
+        if len(list) > 0:
+            return list[0]
+        else:
+            return None
 
 
-    if(flag):
-        if(len(cards_color) > 0):
-            cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-            card_number = cards_color_[0].get('number')
+    if(len(cards_color) > 0):
+        cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+        card_number = cards_color_[0].get('number')
+        if(flag):
             if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
                 list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild4
             else:
-                list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
+                list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
         else:
-            list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
-    else:
-        if(len(cards_color) > 0):
-            cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
-            card_number = cards_color_[0].get('number')
             if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
                 list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild + cards_wild4   
             else:
                 list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild + cards_wild4
-        else:
-            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
-            
         
-    
-    
+        if len(list) > 0:
+            return list[0]
+        else:
+            return None
+            
+    if(flag):
+        list = cards_wild_shuffle + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4    
+    else:
+        list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild + cards_wild4
+        if(number_of_my_card == 1):
+            list = list + cards_wild_shuffle
+        
     if len(list) > 0:
         return list[0]
     else:
