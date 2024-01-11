@@ -92,9 +92,9 @@ TIME_DELAY = 10 # 処理停止時間
 once_connected = False
 id_e = [0]*4 #敵のidを保存する
 id = 'welldefined' # 自分のID
-# uno_declared = {} # 他のプレイヤーのUNO宣言状況
-# player_challenge[4][256] = {} #他プレイヤーのチャレンジ回数を記録
-# player_challenge_succeed[4][256] = {} #他プレイヤーのチャレンジ成功回数を記録
+uno_declared = {} # 他のプレイヤーのUNO宣言状況
+player_challenge = [[0]*4] #他プレイヤーのチャレンジ回数を記録
+player_challenge_succeed = [[0]*4] #他プレイヤーのチャレンジ成功回数を記録
 cards_colors = [] # 対戦開始時のカードがワイルドだった時, シャッフルワイルドが場札に出された時専用
 cards_all = [[0]]*5 # 0~3にプレイヤー(順番)、4に場札の捨て札を記録する
 my_turn = 0 # 自分の順番の数を代入する
@@ -163,6 +163,7 @@ idの整合性を確かめる関数
 """
 
 def id_checker(player):
+    global id_e
     if player == id_e[0]:
         return 0
     if player == id_e[1]:
@@ -589,6 +590,7 @@ def on_join_room(data_res):
 # カードが手札に追加された
 @sio.on(SocketConst.EMIT.RECEIVER_CARD)
 def on_reciever_card(data_res):
+    global cards_colors
     if(len(data_res.get('cards_receive')) == 7):
         cards_colors = data_res.get('cards_receive')
     receive_event(SocketConst.EMIT.RECEIVER_CARD, data_res)
@@ -597,6 +599,7 @@ def on_reciever_card(data_res):
 # 対戦の開始
 @sio.on(SocketConst.EMIT.FIRST_PLAYER)
 def on_first_player(data_res):
+    global id_e, my_turn
     ids = data_res.get('play_order')
     i = 0
     for id_ in ids:
@@ -612,6 +615,7 @@ def on_first_player(data_res):
 @sio.on(SocketConst.EMIT.COLOR_OF_WILD)
 def on_color_of_wild(data_res):
     def color_of_wild_callback(data_res):
+        global cards_colors
         color = select_change_color(cards_colors)
         data = {
             'color_of_wild': color,
@@ -633,6 +637,7 @@ def on_update_color(data_res):
 @sio.on(SocketConst.EMIT.SHUFFLE_WILD)
 def on_shuffle_wild(data_res):
     def shuffle_wild_calback(data_res):
+        global cards_colors
         cards_colors = data_res.get('cards_receive')
         global uno_declared
         uno_declared = {}
@@ -731,8 +736,9 @@ def on_next_player(data_res):
 @sio.on(SocketConst.EMIT.PLAY_CARD)
 def on_play_card(data_res):
     def play_card_callback(data_res):
+        global cards_all
         player = data_res.get('player')
-        cards_all[id_checker(player)] = data_res.get('card_play')
+        cards_all[id_checker(player)].append(data_res.get('card_play'))
         global uno_declared
         # UNO宣言を行った場合は記録する
         if data_res.get('yell_uno'):
@@ -758,9 +764,10 @@ def on_draw_card(data_res):
 @sio.on(SocketConst.EMIT.PLAY_DRAW_CARD)
 def on_play_draw_card(data_res):
     def play_draw_card_callback(data_res):
+        global cards_all
         if data_res.get('is_play_card'):
             player = data_res.get('player')
-            cards_all[id_checker(player)] = data_res.get('card_play')
+            cards_all[id_checker(player)].append(data_res.get('card_play'))
         global uno_declared
         # UNO宣言を行った場合は記録する
         if data_res.get('yell_uno'):
@@ -794,8 +801,14 @@ def on_pointed_not_say_uno(data_res):
 @sio.on(SocketConst.EMIT.FINISH_TURN)
 def on_finish_turn(data_res):
     def finish_turn__callback(data_res):
-        global uno_declared
+        global id_e, uno_declared, player_challenge, player_challenge_succeed, cards_colors, cards_all, my_turn
+        id_e = [0]*4
         uno_declared = {}
+        player_challenge = [[0]*4]
+        player_challenge_succeed = [[0]*4]
+        cards_colors = []
+        cards_all = [[0]]*5
+        my_turn = 0
 
     receive_event(SocketConst.EMIT.FINISH_TURN, data_res, finish_turn__callback)
 
