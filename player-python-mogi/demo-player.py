@@ -98,6 +98,7 @@ player_challenge_succeed = [[0]*4] #他プレイヤーのチャレンジ成功�
 cards_colors = [] # 対戦開始時のカードがワイルドだった時, シャッフルワイルドが場札に出された時専用
 cards_all = [[0]]*5 # 0~3にプレイヤー(順番)、4に場札の捨て札を記録する
 my_turn = 0 # 自分の順番の数を代入する
+flag = 0 # selectで使うフラグ変数
 
 
 """
@@ -184,6 +185,7 @@ Args:
     before_caard (*): 場札のカード
 """
 def select_play_card(cards, before_caard, number_card_of_player):
+    global flag
     cards_wild = [] # 白いワイルドを格納
     cards_wild_shuffle = [] # シャッフルワイルドを格納
     cards_wild_white = [] # 白いワイルドを格納
@@ -194,13 +196,12 @@ def select_play_card(cards, before_caard, number_card_of_player):
     cards_skip = [] # skipを格納
     cards_draw_2 = [] # draw_2を格納
     list = [] # 出せるカードを優先順位順に格納
-    flag = 0 # 採取的に決めるフラグ変数
+    flag = 0 # 最終的に決めるフラグ変数
     flag_1 = 1 # シャッフルワイルドについてのフラグ変数
     flag_2 = 1 # フラグ第２変数 二つとも1のときのみシャッフルを適用
     flag_3 = 1 # フラグ第３変数　これは独立
     count = 0 # ワイルドの手札の枚数をカウントする
     number_of_my_card = 0 # 自分の手札の枚数をカウントする
-    
     
     # 場札と照らし合わせ出せるカードを抽出する
     for card in cards:
@@ -678,6 +679,9 @@ def on_next_player(data_res):
         if special_logic_num_random == 0:
             send_event(SocketConst.EMIT.SPECIAL_LOGIC, { 'title': SPECIAL_LOGIC_TITLE })
 
+        # フラグ変数のリセット    
+        global flag
+        flag = 0
         play_card = select_play_card(cards, data_res.get('card_before'), number_cards)
 
         if play_card:
@@ -704,21 +708,20 @@ def on_next_player(data_res):
                     return
 
                 # 以後、引いたカードが場に出せるときの処理
-                card = res.get('draw_card')
-                cards.append(card)
-                play_draw_card = select_play_card(cards, data_res.get('card_before'), number_cards)
-                if play_draw_card:
+                play_card = res.get('draw_card')[0]
+                special = play_card.get('special')        
+                
+                if ((str(special) is not Special.WILD_SHUFFLE) or (flag)):
                     data = {
                         'is_play_card': True,
-                        'yell_uno': len(cards + card) == 2, # 残り手札数を考慮してUNOコールを宣言する
-                    }                    
+                        'yell_uno': len(cards + play_card) == 2, # 残り手札数を考慮してUNOコールを宣言する
+                    }                              
                 else:
                     data = {
                         'is_play_card': False,
-                        'yell_uno': len(cards + card) == 2, # 残り手札数を考慮してUNOコールを宣言する
+                        'yell_uno': len(cards + play_card) == 1, # 残り手札数を考慮してUNOコールを宣言する
                     }
                 
-                play_card = res.get('draw_card')[0]
                 if play_card.get('special') == Special.WILD or play_card.get('special') == Special.WILD_DRAW_4:
                     color = select_change_color(cards)
                     data['color_of_wild'] = color
