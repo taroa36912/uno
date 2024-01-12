@@ -710,9 +710,9 @@ def on_next_player(data_res):
 
                 # 以後、引いたカードが場に出せるときの処理
                 play_card = res.get('draw_card')
-                special = play_card.get('special')        
+                special = play_card[0].get('special')
                 
-                if ((str(special) is not Special.WILD_SHUFFLE) or (flag)):
+                if ((not special) or (special and (str(special) is not Special.WILD_SHUFFLE)) or (flag)):
                     data = {
                         'is_play_card': True,
                         'yell_uno': len(cards + play_card) == 2, # 残り手札数を考慮してUNOコールを宣言する
@@ -723,7 +723,7 @@ def on_next_player(data_res):
                         'yell_uno': len(cards + play_card) == 1, # 残り手札数を考慮してUNOコールを宣言する
                     }
                     
-                play_card = res.get('draw_card')[0]               
+                play_card = play_card[0]               
                 if play_card.get('special') == Special.WILD or play_card.get('special') == Special.WILD_DRAW_4:
                     color = select_change_color(cards)
                     data['color_of_wild'] = color
