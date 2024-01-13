@@ -184,9 +184,9 @@ Args:
     cards (list): 自分の手札
     before_caard (*): 場札のカード
 """
-def select_play_card(cards, before_caard, number_card_of_player):
+def select_play_card(cards, before_caard, number_card_of_player, turn):
     global flag
-    cards_wild = [] # 白いワイルドを格納
+    cards_wild = [] # ワイルドを格納
     cards_wild_shuffle = [] # シャッフルワイルドを格納
     cards_wild_white = [] # 白いワイルドを格納
     cards_wild4 = [] # ワイルドドロー4を格納
@@ -284,14 +284,43 @@ def select_play_card(cards, before_caard, number_card_of_player):
     """
     
     
+    """
+    ここから、枚数が少ない相手への切り札
+    自分が少ないときも出す
+    基本的に、最後の一枚のワイルドは誰かが残り2枚になるまで取っておく
+    """
     
+    for k, v in number_card_of_player.items():
+        if v < 3:
+            if id_checker(k) == my_turn:
+                list = cards_wild_white + cards_wild4 + cards_wild
+                if len(list) > 0:
+                    return list[0]
+                list = []
+            if turn:
+                if id_checker(k) == (my_turn + 1) % 4:
+                    list = cards_draw_2 + cards_wild4 + cards_wild_white + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
+                if id_checker(k) == (my_turn + 2) % 4:
+                    list = cards_wild_white + cards_wild4 + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
+            else:
+                if id_checker(k) == (my_turn - 1) % 4:
+                    list = cards_draw_2 + cards_wild4 + cards_wild_white + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
+                if id_checker(k) == (my_turn - 2) % 4:
+                    list = cards_wild_white + cards_wild4 + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
     
-    
-    
-    
-    
-    
-    
+
     cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
 
     
@@ -301,27 +330,12 @@ def select_play_card(cards, before_caard, number_card_of_player):
             return list[0]
         else:
             return None
-    
-    
-    """
-    if(count == 1 && ):
-        if(flag):
-            list = cards_wild_shuffle + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
-        else:
-            list = cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
-        
-        if len(list) > 0:
-            return list[0]
-        else:
-            return None
-    """
+
 
     if(len(cards_color_) > 0):
         card_number = cards_color_[0].get('number')
         if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
-            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_
-        else:
-            list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number
+            list = cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild_white + cards_wild + cards_wild4
         if len(list) > 0:
             return list[0]
         else:
@@ -332,11 +346,13 @@ def select_play_card(cards, before_caard, number_card_of_player):
     分岐がない場合の処理
     """
 
-    list = cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number        
+    list = cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild_white + cards_wild + cards_wild4  
     if len(list) > 0:
         return list[0]
     else:
         return None
+    
+    
 
 """
 乱数取得
@@ -664,6 +680,7 @@ def on_next_player(data_res):
     def next_player_calback(data_res):
         cards = data_res.get('card_of_player')
         number_cards = data_res.get('number_card_of_player')
+        turn = data_res.get('turn_right')
         determine_if_execute_pointed_not_say_uno(number_cards)
 
         if (data_res.get('draw_reason') == DrawReason.WILD_DRAW_4):
@@ -685,7 +702,7 @@ def on_next_player(data_res):
         # フラグ変数のリセット    
         global flag
         flag = 0
-        play_card = select_play_card(cards, data_res.get('card_before'), number_cards)
+        play_card = select_play_card(cards, data_res.get('card_before'), number_cards, turn)
 
         if play_card:
             # 選出したカードがある時
