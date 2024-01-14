@@ -85,7 +85,7 @@ room_name = args.room_name # ディーラー名
 player = args.player # プレイヤー名
 event_name = args.event_name # Socket通信イベント名
 is_test_tool = TEST_TOOL_HOST_PORT in host # 接続先が開発ガイドラインツールであるかを判定
-SPECIAL_LOGIC_TITLE = '◯◯◯◯◯◯◯◯◯◯◯◯◯◯◯◯◯◯◯◯◯' # スペシャルロジック名
+SPECIAL_LOGIC_TITLE = 'シャッフルアルゴリズム' # スペシャルロジック名
 TIME_DELAY = 10 # 処理停止時間
 
 
@@ -309,6 +309,8 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
         if flag:
             list = cards_wild_shuffle
             if len(list) > 0:
+                #  スペシャルロジックを発動させる
+                send_event(SocketConst.EMIT.SPECIAL_LOGIC, { 'title': SPECIAL_LOGIC_TITLE })
                 return list[0]
             else:
                 return None
@@ -834,11 +836,6 @@ def on_next_player(data_res):
             # カードを引かないと行けない時
             send_event(SocketConst.EMIT.DRAW_CARD, {})
             return
-
-        #  スペシャルロジックを発動させる
-        special_logic_num_random = random_by_number(10)
-        if special_logic_num_random == 0:
-            send_event(SocketConst.EMIT.SPECIAL_LOGIC, { 'title': SPECIAL_LOGIC_TITLE })
 
         # フラグ変数のリセット    
         global flag
