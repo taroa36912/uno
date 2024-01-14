@@ -351,6 +351,14 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
                     if len(list) > 0:
                         return list[0]
                     list = []
+                if id_checker(k) == (my_turn + 3) % 4:
+                    if challenge_checker(id_turn[(my_turn+1)%4]):
+                        list = cards_wild_white + cards_wild4 + cards_wild
+                    else:
+                        list = cards_wild_white + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
             else:
                 if id_checker(k) == my_turn:
                     if challenge_checker(id_turn[(my_turn-1)%4]):
@@ -370,6 +378,14 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
                     list = []
                 if id_checker(k) == (my_turn - 2) % 4:
                     if challenge_checker(id_turn[(my_turn-1)%4]):
+                        list = cards_wild_white + cards_wild4 + cards_wild
+                    else:
+                        list = cards_wild_white + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
+                if id_checker(k) == (my_turn - 3) % 4:
+                    if challenge_checker(id_turn[(my_turn+1)%4]):
                         list = cards_wild_white + cards_wild4 + cards_wild
                     else:
                         list = cards_wild_white + cards_wild
