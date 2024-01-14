@@ -233,7 +233,7 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
     flag = 0 # 最終的に決めるフラグ変数
     flag_1 = 1 # シャッフルワイルドについてのフラグ変数
     flag_2 = 1 # フラグ第２変数 二つとも1のときのみシャッフルを適用
-    flag_3 = 1 # フラグ第３変数　これは独立
+    flag_3 = 0 # フラグ第３変数　これは独立
     count = 0 # ワイルドの手札の枚数をカウントする
     number_of_my_card = 0 # 自分の手札の枚数をカウントする
     
