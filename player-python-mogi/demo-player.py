@@ -298,20 +298,20 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
                 return list[0]
             else:
                 return None
-        if ((number_of_my_card < player_card_sum // 4)):
+        if ((number_of_my_card <= player_card_sum // 4)):
             flag_1 = 0
             
-    if(flag_1 and flag_2) or flag_3:
-        flag = 1
-    else:
-        flag = 0
-        
-    if flag and len(cards_wild_shuffle) > 0:
-        list = cards_wild_shuffle
-        if len(list) > 0:
-            return list[0]
+        if(flag_1 and flag_2) or flag_3:
+            flag = 1
         else:
-            return None
+            flag = 0
+        
+        if flag:
+            list = cards_wild_shuffle
+            if len(list) > 0:
+                return list[0]
+            else:
+                return None
         
     """
     ここまで
