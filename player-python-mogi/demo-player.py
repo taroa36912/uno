@@ -394,24 +394,49 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
                     list = []
     
 
-    cards_color_ = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+    cards_color = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
+    
+    if len(cards_reverse) > 1:
+        color_number = color_point(cards)
+        sorted_color_point_pairs = [index for index, value in sorted(enumerate(color_number), key=lambda x: x[1], reverse=True)]
+        cards_reverse = sorted(cards_reverse, key=lambda card: sorted_color_point_pairs.index(ARR_COLOR.index(card.get('color'))))
+
+    if len(cards_draw_2) > 1:
+        color_number = color_point(cards)
+        sorted_color_point_pairs = [index for index, value in sorted(enumerate(color_number), key=lambda x: x[1], reverse=True)]
+        cards_draw_2 = sorted(cards_draw_2, key=lambda card: sorted_color_point_pairs.index(ARR_COLOR.index(card.get('color'))))
+                
+    if len(cards_skip) > 1:
+        color_number = color_point(cards)
+        sorted_color_point_pairs = [index for index, value in sorted(enumerate(color_number), key=lambda x: x[1], reverse=True)]
+        cards_skip = sorted(cards_skip, key=lambda card: sorted_color_point_pairs.index(ARR_COLOR.index(card.get('color'))))
+    
+    if len(cards_number) > 1:
+        color_number = color_point(cards)
+        sorted_color_point_pairs = [index for index, value in sorted(enumerate(color_number), key=lambda x: x[1], reverse=True)]
+        cards_number = sorted(cards_number, key=lambda card: sorted_color_point_pairs.index(ARR_COLOR.index(card.get('color'))))
+
+
+
+
+
 
     
     if(count > 1):
         if challenge_checker(id_turn[(my_turn-1)%4]):
-            list = cards_wild + cards_wild4 + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number
+            list = cards_wild + cards_wild4 + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
         else:
-            list = cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild4
+            list = cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild4
         if len(list) > 0:
             return list[0]
         else:
             return None
 
 
-    if(len(cards_color_) > 0):
-        card_number = cards_color_[0].get('number')
+    if(len(cards_color) > 0):
+        card_number = cards_color[0].get('number')
         if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
-            list = cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild_white + cards_wild + cards_wild4
+            list = cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color + cards_wild_white + cards_wild + cards_wild4
         if len(list) > 0:
             return list[0]
         
@@ -420,7 +445,7 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
     分岐がない場合の処理
     """
 
-    list = cards_draw_2 + cards_skip + cards_reverse + cards_color_ + cards_number + cards_wild_white + cards_wild + cards_wild4  
+    list = cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild_white + cards_wild + cards_wild4  
     if len(list) > 0:
         return list[0]
     else:
@@ -447,6 +472,44 @@ def random_by_number(num):
 Returns:
     str:
 """
+
+def color_point(cards):
+    # 自分の手札に一番多い色を選択する
+    if(len(cards) > 0):
+        color_number = [0,0,0,0]
+        for card in cards:
+            if(card.get('color') == Color.RED):
+                if(card.get('special')):
+                    color_number[0] += 20
+                elif(card.get('number')):
+                    color_number[0] += int(card.get('number'))
+                else:
+                    color_number[0] += 1
+            elif(card.get('color') == Color.YELLOW):
+                if(card.get('special')):
+                    color_number[1] += 20
+                elif(card.get('number')):
+                    color_number[1] += int(card.get('number'))
+                else:
+                    color_number[1] += 1
+            elif(card.get('color') == Color.GREEN):
+                if(card.get('special')):
+                    color_number[2] += 20
+                elif(card.get('number')):
+                    color_number[2] += int(card.get('number'))
+                else:
+                    color_number[2] += 1
+            elif(card.get('color') == Color.BLUE):
+                if(card.get('special')):
+                    color_number[3] += 20
+                elif(card.get('number')):
+                    color_number[3] += int(card.get('number'))
+                else:
+                    color_number[3] += 1
+    
+        return color_number
+    
+    
 
 
 def select_change_color(cards):
