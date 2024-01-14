@@ -93,6 +93,7 @@ once_connected = False
 id_turn = [0]*4 # 敵のidを順番通りに保存する
 id_challenge = [0]*4 # チャレンジ用ID名保存
 challenge_flag = True # 初回のみ保存
+flag_50 = 0 # 1試合ごとに+1する
 id = 'welldefined' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
 player_challenge = [0]*4 # 他プレイヤーのチャレンジ回数を記録
@@ -202,11 +203,20 @@ def id_checker_challenge(player):
 
 def challenge_checker(next_player):
     i = id_checker_challenge(next_player)
-    if player_challenge[i] > 5:
+    if flag_50 > 50 and player_challenge[i] == 0:
+        return True
+    
+    if flag_50 > 50 and player_challenge[i] > 5:
         if (player_challenge_succeed[i] / player_challenge[i]) < 0.5:
             return True
+
     return False
 
+def turn_checker(turn):
+    if turn:
+        return 1
+    else:
+        return -1
     
 
 
@@ -289,7 +299,7 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
         for k, v in number_card_of_player.items():
             if id_checker(k) == my_turn:
                 number_of_my_card = v
-            elif v < 3:
+            elif v < 2:
                 flag_3 = 1
             player_card_sum += v
         if(number_of_my_card == 1):
@@ -320,82 +330,6 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
     """
     
     
-    """
-    ここから、枚数が少ない相手への切り札
-    自分が少ないときも出す
-    基本的に、最後の一枚のワイルドは誰かが残り2枚になるまで取っておく
-    """
-    
-    for k, v in number_card_of_player.items():
-        if v < 3:
-            if turn:
-                if id_checker(k) == my_turn:
-                    if challenge_checker(id_turn[(my_turn+1)%4]):
-                        list = cards_wild_white + cards_wild4 + cards_wild
-                    else:
-                        list = cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-                if id_checker(k) == (my_turn + 1) % 4:
-                    if challenge_checker(id_turn[(my_turn+1)%4]):
-                        list = cards_draw_2 + cards_wild4 + cards_wild_white + cards_wild
-                    else:
-                        list = cards_draw_2 + cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-                if id_checker(k) == (my_turn + 2) % 4:
-                    if challenge_checker(id_turn[(my_turn+1)%4]):
-                        list = cards_wild_white + cards_wild4 + cards_wild
-                    else:
-                        list = cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-                if id_checker(k) == (my_turn + 3) % 4:
-                    if challenge_checker(id_turn[(my_turn+1)%4]):
-                        list = cards_wild_white + cards_wild4 + cards_wild
-                    else:
-                        list = cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-            else:
-                if id_checker(k) == my_turn:
-                    if challenge_checker(id_turn[(my_turn-1)%4]):
-                        list = cards_wild_white + cards_wild4 + cards_wild
-                    else:
-                        list = cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-                if id_checker(k) == (my_turn - 1) % 4:
-                    if challenge_checker(id_turn[(my_turn-1)%4]):
-                        list = cards_draw_2 + cards_wild4 + cards_wild_white + cards_wild
-                    else:
-                        list = cards_draw_2 + cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-                if id_checker(k) == (my_turn - 2) % 4:
-                    if challenge_checker(id_turn[(my_turn-1)%4]):
-                        list = cards_wild_white + cards_wild4 + cards_wild
-                    else:
-                        list = cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-                if id_checker(k) == (my_turn - 3) % 4:
-                    if challenge_checker(id_turn[(my_turn+1)%4]):
-                        list = cards_wild_white + cards_wild4 + cards_wild
-                    else:
-                        list = cards_wild_white + cards_wild
-                    if len(list) > 0:
-                        return list[0]
-                    list = []
-    
-
     cards_color = sorted(cards_color, key=lambda x: int(x["number"]), reverse=True)
     
     if len(cards_reverse) > 1:
@@ -419,14 +353,57 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
         cards_number = sorted(cards_number, key=lambda card: sorted_color_point_pairs.index(ARR_COLOR.index(card.get('color'))))
 
 
+    
+    
+    """
+    ここから、枚数が少ない相手への切り札
+    自分が少ないときも出す
+    基本的に、最後の一枚のワイルドは誰かが残り2枚になるまで取っておく
+    """
+    
+    for k, v in number_card_of_player.items():
+        if v < 3:
+            if turn:
+                if id_checker(k) == my_turn:
+                    if challenge_checker(id_turn[(my_turn + turn_checker(turn))%4]):
+                        list = cards_wild4 + cards_wild_white + cards_wild
+                    else:
+                        list = cards_wild_white + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
+                if id_checker(k) == (my_turn + 1) % 4:
+                    if challenge_checker(id_turn[(my_turn + turn_checker(turn))%4]):
+                        list = cards_wild4 + cards_wild_shuffle + cards_draw_2 + cards_wild_white + cards_skip + cards_wild
+                    else:
+                        list = cards_draw_2 + cards_wild_white + cards_skip + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
+                if id_checker(k) == (my_turn + 2) % 4:
+                    if challenge_checker(id_turn[(my_turn + turn_checker(turn))%4]):
+                        list = cards_wild_white + cards_wild_shuffle + cards_wild4 + cards_wild
+                    else:
+                        list = cards_wild_white + cards_wild
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
+                if id_checker(k) == (my_turn + 3) % 4:
+                    if challenge_checker(id_turn[(my_turn + turn_checker(turn))%4]):
+                        list = cards_wild_shuffle + cards_wild4 + cards_wild + cards_wild_white
+                    else:
+                        list = cards_wild + cards_wild_white
+                    if len(list) > 0:
+                        return list[0]
+                    list = []
 
 
 
 
     
     if(count > 1):
-        if challenge_checker(id_turn[(my_turn-1)%4]):
-            list = cards_wild + cards_wild4 + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
+        if challenge_checker(id_turn[(my_turn + turn_checker(turn))%4]):
+            list = cards_wild4 + cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
         else:
             list = cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild4
         if len(list) > 0:
@@ -744,6 +721,7 @@ Socket通信受信
 # プレイヤーがゲームに参加
 @sio.on(SocketConst.EMIT.JOIN_ROOM)
 def on_join_room(data_res):
+    
     receive_event(SocketConst.EMIT.JOIN_ROOM, data_res)
 
 
@@ -766,11 +744,11 @@ def on_first_player(data_res):
         id_turn[i] = id_
         if challenge_flag:
             id_challenge[i] = id_
-            challenge_flag = False
         if id_ == id:
             my_turn = i
         i += 1
     i = 0
+    challenge_flag = False
     receive_event(SocketConst.EMIT.FIRST_PLAYER, data_res)
 
 
@@ -968,12 +946,13 @@ def on_pointed_not_say_uno(data_res):
 @sio.on(SocketConst.EMIT.FINISH_TURN)
 def on_finish_turn(data_res):
     def finish_turn__callback(data_res):
-        global id_turn, uno_declared, cards_colors, cards_all, my_turn
+        global id_turn, uno_declared, cards_colors, cards_all, my_turn, flag_50
         id_turn = [0]*4
         uno_declared = {}
         cards_colors = []
         cards_all = [[0]]*5
         my_turn = 0
+        flag_50 += 1
 
     receive_event(SocketConst.EMIT.FINISH_TURN, data_res, finish_turn__callback)
 
