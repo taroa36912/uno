@@ -398,8 +398,6 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
             list = cards_draw_2 + cards_skip + cards_reverse + cards_number + cards_color_ + cards_wild_white + cards_wild + cards_wild4
         if len(list) > 0:
             return list[0]
-        else:
-            return None
         
 
     """
