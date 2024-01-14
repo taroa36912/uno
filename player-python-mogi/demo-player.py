@@ -95,8 +95,8 @@ id_challenge = [0]*4 # チャレンジ用ID名保存
 challenge_flag = True # 初回のみ保存
 id = 'welldefined' # 自分のID
 uno_declared = {} # 他のプレイヤーのUNO宣言状況
-player_challenge = [[0]*4] # 他プレイヤーのチャレンジ回数を記録
-player_challenge_succeed = [[0]*4] # 他プレイヤーのチャレンジ成功回数を記録
+player_challenge = [0]*4 # 他プレイヤーのチャレンジ回数を記録
+player_challenge_succeed = [0]*4 # 他プレイヤーのチャレンジ成功回数を記録
 cards_colors = [] # 対戦開始時のカードがワイルドだった時, シャッフルワイルドが場札に出された時専用
 cards_all = [[0]]*5 # 0~3にプレイヤー(順番)、4に場札の捨て札を記録する
 my_turn = 0 # 自分の順番の数を代入する
@@ -434,9 +434,6 @@ Returns:
     str:
 """
 
-def select_change_color_r():
-    return ARR_COLOR[random_by_number(len(ARR_COLOR))]
-
 
 def select_change_color(cards):
     # 自分の手札に一番多い色を選択する
@@ -493,6 +490,8 @@ Returns:
     bool:
 """
 def is_challenge(number_card_of_player, cards):
+    """
+    
     for k, v in number_card_of_player.items():
         if k == id:
             if v == 1:
@@ -500,6 +499,8 @@ def is_challenge(number_card_of_player, cards):
             
     if(shuffle_check(cards)):
         return True
+        
+    """
     
         
     return False
