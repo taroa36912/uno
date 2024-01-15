@@ -244,7 +244,6 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
     flag_1 = 1 # シャッフルワイルドについてのフラグ変数
     flag_2 = 1 # フラグ第２変数 二つとも1のときのみシャッフルを適用
     flag_3 = 0 # フラグ第３変数　これは独立
-    count = 0 # ワイルドの手札の枚数をカウントする
     number_of_my_card = 0 # 自分の手札の枚数をカウントする
     
     # 場札と照らし合わせ出せるカードを抽出する
@@ -253,16 +252,12 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
         card_number = card.get('number')
         if str(card_special) == Special.WILD_DRAW_4: # 手札にドロー4がある場合、抽出
             cards_wild4.append(card)
-            count += 1
         elif (str(card_special) == Special.WILD): # 手札にワイルドがある場合、抽出
             cards_wild.append(card)
-            count += 1
         elif (str(card_special) == Special.WILD_SHUFFLE): # 手札にシャッフルがある場合、抽出
             cards_wild_shuffle.append(card)
-            count += 1
         elif (str(card_special) == Special.WHITE_WILD): # 手札に白ワイルドがある場合、抽出
             cards_wild_white.append(card)
-            count += 1
         elif (
             (str(card_special) == Special.DRAW_2) and 
               ((str(card.get('color')) == str(before_caard.get('color'))) or (str(card_special) == str(before_caard.get('special'))))
@@ -407,19 +402,6 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
 
 
 
-
-    
-    if(count > 1):
-        if challenge_checker(id_turn[(my_turn + turn_checker(turn))%4]):
-            list = cards_wild4 + cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
-        else:
-            list = cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild4
-        if len(list) > 0:
-            return list[0]
-        else:
-            return None
-
-
     if(len(cards_color) > 0):
         card_number = cards_color[0].get('number')
         if (card_number and before_caard.get('number') and int(card_number) < int(before_caard.get('number'))):
@@ -428,11 +410,10 @@ def select_play_card(cards, before_caard, number_card_of_player, turn):
             return list[0]
         
 
-    """
-    分岐がない場合の処理
-    """
-
-    list = cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild_white + cards_wild + cards_wild4  
+    if challenge_checker(id_turn[(my_turn + turn_checker(turn))%4]):
+        list = cards_wild4 + cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number
+    else:
+        list = cards_wild + cards_wild_white + cards_draw_2 + cards_skip + cards_reverse + cards_color + cards_number + cards_wild4
     if len(list) > 0:
         return list[0]
     else:
